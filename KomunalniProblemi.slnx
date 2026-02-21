@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="KomunalniProblemi.Api/KomunalniProblemi.Api.csproj" />
+  <Project Path="KomunalniProblemi.Application/KomunalniProblemi.Application.csproj" />
+  <Project Path="KomunalniProblemi.BlazorUI/KomunalniProblemi.BlazorUI.csproj" />
+  <Project Path="KomunalniProblemi.Domain/KomunalniProblemi.Domain.csproj" />
+  <Project Path="KomunalniProblemi.Infrastructure/KomunalniProblemi.Infrastructure.csproj" />
+  <Project Path="KomunalniProblemi.Tests/KomunalniProblemi.Tests.csproj" />
+</Solution>
