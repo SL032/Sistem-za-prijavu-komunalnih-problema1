@@ -1,6 +1,19 @@
-@KomunalniProblemi.Api_HostAddress = http://localhost:5166
+@KomunalniProblemi_Api_HostAddress = http://localhost:5166
 
-GET {{KomunalniProblemi.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+### Health
+GET {{KomunalniProblemi_Api_HostAddress}}/health
 
-###
+### POST - kreiranje prijave
+POST {{KomunalniProblemi_Api_HostAddress}}/api/prijave
+Content-Type: application/json
+
+{
+  "korisnikID": 1,
+  "problemID": 1,
+  "lokacijaID": 1,
+  "sluzbaID": 1,
+  "opis": "Rupa ispred zgrade, velika i opasna."
+}
+
+### GET - lista prijava
+GET {{KomunalniProblemi_Api_HostAddress}}/api/prijave
