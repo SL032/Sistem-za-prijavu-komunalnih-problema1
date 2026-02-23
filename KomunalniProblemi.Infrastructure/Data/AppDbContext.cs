@@ -1,14 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using KomunalniProblemi.Domain.Entities;
+using KomunalniProblemi.Domain.Enums;
 
 namespace KomunalniProblemi.Infrastructure.Data;
 
 public class AppDbContext : DbContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options)
-        : base(options)
-    {
-    }
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     public DbSet<Korisnik> Korisnici => Set<Korisnik>();
     public DbSet<Prijava> Prijave => Set<Prijava>();
@@ -21,6 +19,7 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // relacije
         modelBuilder.Entity<Prijava>()
             .HasOne(p => p.Korisnik)
             .WithMany(k => k.Prijave)
@@ -46,63 +45,55 @@ public class AppDbContext : DbContext
             .WithMany(p => p.Dokumenti)
             .HasForeignKey(d => d.PrijavaID);
 
-        // ========================
-        // seed podaci ovde - dodao sam korisnika lokaciju malo ostecenje puta itd..
-        // ========================
+        // auth
+        modelBuilder.Entity<Korisnik>()
+            .HasIndex(k => k.Email)
+            .IsUnique();
 
+        modelBuilder.Entity<Korisnik>()
+            .Property(k => k.Uloga)
+            .HasConversion<string>()
+            .HasMaxLength(30)
+            .HasDefaultValue(Uloga.Gradjanin);
+
+        modelBuilder.Entity<Korisnik>()
+            .Property(k => k.PasswordHash);
+
+        modelBuilder.Entity<Korisnik>()
+            .Property(k => k.PasswordSalt);
+
+        modelBuilder.Entity<Korisnik>()
+            .Property(k => k.CreatedAtUtc)
+            .HasDefaultValue(new DateTime(2026, 02, 01, 0, 0, 0, DateTimeKind.Utc));
+
+        // seed (Samo JEDAN korisnik ID=1)
         modelBuilder.Entity<Korisnik>().HasData(
             new Korisnik
             {
                 KorisnikID = 1,
                 Ime = "Petar",
                 Prezime = "Petrović",
-                Email = "petar@test.com"
+                Email = "petar@test.com",
+                Uloga = Uloga.Gradjanin,
+                CreatedAtUtc = new DateTime(2026, 02, 01, 0, 0, 0, DateTimeKind.Utc),
+                PasswordHash = null,
+                PasswordSalt = null
             }
         );
 
         modelBuilder.Entity<Lokacija>().HasData(
-            new Lokacija
-            {
-                LokacijaID = 1,
-                Adresa = "Kragujevac, Centar",
-                Opis = "Kod pošte"
-            }
+            new Lokacija { LokacijaID = 1, Adresa = "Kragujevac, Centar", Opis = "Kod pošte" }
         );
 
         modelBuilder.Entity<KomunalniProblem>().HasData(
-            new KomunalniProblem
-            {
-                ProblemID = 1,
-                Naziv = "Rupa na putu",
-                Opis = "Oštećenje puta"
-            },
-            new KomunalniProblem
-            {
-                ProblemID = 2,
-                Naziv = "Javna rasveta",
-                Opis = "Neispravna/ugašena rasveta"
-            },
-            new KomunalniProblem
-            {
-                ProblemID = 3,
-                Naziv = "Otpad",
-                Opis = "Divlja deponija / neodneto smeće"
-            }
+            new KomunalniProblem { ProblemID = 1, Naziv = "Rupa na putu", Opis = "Oštećenje puta" },
+            new KomunalniProblem { ProblemID = 2, Naziv = "Javna rasveta", Opis = "Neispravna/ugašena rasveta" },
+            new KomunalniProblem { ProblemID = 3, Naziv = "Otpad", Opis = "Divlja deponija / neodneto smeće" }
         );
 
         modelBuilder.Entity<KomunalnaSluzba>().HasData(
-            new KomunalnaSluzba
-            {
-                SluzbaID = 1,
-                Naziv = "Komunalna inspekcija",
-                Kontakt = "inspekcija@komunalno.cacak.rs"
-            },
-            new KomunalnaSluzba
-            {
-                SluzbaID = 2,
-                Naziv = "Javna rasveta",
-                Kontakt = "rasveta@komunalno.cacak.rs"
-            }
+            new KomunalnaSluzba { SluzbaID = 1, Naziv = "Komunalna inspekcija", Kontakt = "inspekcija@komunalno.cacak.rs" },
+            new KomunalnaSluzba { SluzbaID = 2, Naziv = "Javna rasveta", Kontakt = "rasveta@komunalno.cacak.rs" }
         );
     }
 }
